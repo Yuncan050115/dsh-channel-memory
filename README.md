@@ -44,30 +44,46 @@ DeepSeek Harness 插件：**手机通道专属工作区** + **跨会话互通记
 
 ## 安装
 
+> ⚠️ npm 上 `dsh-channel-memory` 目前只有 `0.0.0-stage` 占位版（`latest` 指向它），
+> 真实版本要等 staging approve 完成。**在此之前请用下面的 git 或本地目录方式安装**，
+> 不要直接 `pnpm add dsh-channel-memory`。
+
+在 DSH 的应用 profile 目录里执行（Windows 桌面形态是
+`%USERPROFILE%\.dsh\profiles\desktop`）：
+
 ```bash
 cd %USERPROFILE%\.dsh\profiles\desktop
-node <DSH>\resources\runtime\..\..\resources\app.asar\dsh\... # 见下
+pnpm add github:Yuncan050115/dsh-channel-memory
 ```
 
-推荐用 DSH 插件管理器，或直接：
+或从本地目录安装：
 
 ```bash
-pnpm add dsh-channel-memory
+pnpm add file:C:\path\to\dsh-channel-memory
 ```
 
-然后把 bundle 名加进 `package.json` 的 `dsh.profile.bundles`：
+然后把 bundle 名加进同目录 `package.json` 的 `dsh.profile.bundles`
+（DSH 插件管理器会自动做这一步，手工加也可以）：
 
 ```json
 "dsh": { "profile": { "bundles": [ ..., "dsh-channel-memory" ] } }
 ```
 
-重启 DSH 生效。校验（不启动 GUI，只做组合干跑）：
+重启 DSH 生效。不想重启也可以先校验组合结果——用 DSH 自带运行时做一次干跑
+（`--dump-config` 只组合配置、不启动 GUI）。`<APP>` 是 DSH 的安装目录，
+Windows 桌面形态默认是 `C:\Program Files\DeepSeek Harness` 或
+`D:\DeepSeek Harness`：
 
-```bash
+```bat
 set ELECTRON_RUN_AS_NODE=1
-"DeepSeek Harness.exe" --expose-internals <profile>\..\..\..\app.asar\dsh\node_modules\@deepseek-ai\dsh\lib\bin.js ^
+set DSH_HOME=%USERPROFILE%\.dsh
+"<APP>\DeepSeek Harness.exe" --expose-internals ^
+  "<APP>\resources\app.asar\dsh\node_modules\@deepseek-ai\dsh\lib\bin.js" ^
   --profile desktop --dump-config
 ```
+
+输出里应能看到 `# == dsh-channel-memory` 这一层；若出现 `skipped bundles` 或
+`did not activate`，说明 bundle 没挂上。
 
 ## 配置
 
