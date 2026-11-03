@@ -1,0 +1,4 @@
+node_modules/
+__contract_home/
+__contract_under_test.mjs
+*.tmp

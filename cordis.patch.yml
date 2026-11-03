@@ -1,0 +1,22 @@
+# dsh-channel-memory — installable DSH profile bundle layer.
+#
+# The loader reads this file as `dsh.bundle.patch`, so it must exist even when
+# the plugin needs no config: an insert entry is what actually mounts the bundle
+# into the composed profile tree. `name` is the full npm package name — the
+# client-modules registry resolves the browser bundle by the loader entry name,
+# and the host resolves the package from the profile's node_modules.
+#
+# Every key below is optional; the plugin supplies its own defaults, so an
+# operator can uncomment only what they want to change. Paths are under the DSH
+# home (~/.dsh) by default and honour $DSH_HOME automatically.
+- insert:
+    - id: channel-memory
+      name: 'dsh-channel-memory'
+      config:
+        {}
+        # workspacePath: 'C:/Users/you/.dsh/channel-workspace'   # 手机通道专属工作区目录
+        # workspaceTitle: '手机通道'                              # 侧栏显示名
+        # dataDir: 'C:/Users/you/.dsh/channel-memory'            # 记忆与流水的存放目录
+        # injectIndex: true          # 是否把记忆索引追加进系统提示词（默认 true）
+        # indexLimit: 12             # 索引里最多展示多少条最近记忆
+        # autoDigest: true           # 是否为通道会话的每轮结束记一条流水（默认 true）
