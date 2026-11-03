@@ -116,13 +116,32 @@ keeper → 桥的 `--cwd`），例如：
 
 ## 验证
 
-`plugin/contract_test.mjs` 用**宿主自己的 `defineTool`** 跑契约测试（不是 stub）：
+`test/contract_test.mjs` 用**宿主自己的 `defineTool`** 跑契约测试（不是 stub）：
 value-schema DSL 违规会当场抛。夹具强制宿主不变量（cwd 不符则 `attachSession` 抛），
 因此「外来会话被拒绝挂载」是被真实验证的，而不是被假 object 允许的。
 
+在插件目录里运行（`<APP>` 同上；Windows 桌面形态必须用 DSH 自带的 Electron 跑，
+因为宿主模块在 `app.asar` 里）：
+
+```bash
+set ELECTRON_RUN_AS_NODE=1
+"<APP>\DeepSeek Harness.exe" --expose-internals test\contract_test.mjs
 ```
-RESULT: PASS   （5 个工具注册、1 个提示词分节、外来会话未被挂载、post-apply 写入反映进索引）
+
+可选覆盖（默认指向本机安装布局）：`DSH_TOOLS_ENTRY`、`DSH_PLUGIN_ENTRY`。
+
+实测输出：
+
 ```
+tools registered: 5
+prompt sections : channel-memory:index@3200(text=function)
+attached (channel session): ["sess-abc"]
+after foreign session     : ["sess-abc"] (must not contain sess-elsewhere)
+index reflects post-apply write: true
+RESULT: PASS
+```
+
+测试会把 `DSH_HOME` 指到临时目录，不会碰你真实的 `~/.dsh`。
 
 权限面见 `PERMISSIONS.md`。
 
