@@ -1,6 +1,6 @@
 {
   "name": "dsh-channel-memory",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "微信通道专属工作区 + 跨会话互通记忆：把手机发起的 DSH 会话归到一个独立工作区，并让所有会话共享一份可检索的长期记忆。",
   "license": "MIT",
   "type": "module",
