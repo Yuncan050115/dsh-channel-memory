@@ -1,0 +1,49 @@
+name: Contract test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22.x"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Check
+        run: node test/contract_test.mjs
+      - name: Locate an installed harness
+        id: host
+        run: |
+          # The contract test is only meaningful against the host's real
+          # defineTool, never a stub. Resolve it if the runner has a harness
+          # install, otherwise run the fallback structural assertions.
+          p=$(node -e "try{console.log(require.resolve('@deepseek-ai/dsh-tools/lib/index.js'))}catch{console.log('')}")
+          echo "entry=$p" >> "$GITHUB_OUTPUT"
+      - name: Run contract test with the real host defineTool
+        if: steps.host.outputs.entry != ''
+        env:
+          DSH_TOOLS_ENTRY: ${{ steps.host.outputs.entry }}
+        run: node test/contract_test.mjs
+      - name: No harness on this runner
+        if: steps.host.outputs.entry == ''
+        run: |
+          echo "::notice::No @deepseek-ai/dsh-tools on the runner — the contract test"
+          echo "::notice::needs the host's real defineTool. Run it locally:"
+          echo "  DSH_TOOLS_ENTRY=/path/to/app.asar/dsh/node_modules/@deepseek-ai/dsh-tools/lib/index.js \\"
+          echo "    node test/contract_test.mjs"
+          node --check lib/index.js
